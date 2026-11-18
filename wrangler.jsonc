@@ -20,5 +20,8 @@
   ],
   "vars": {
     "BACKEND_URL": ""
+  },
+  "triggers": {
+    "crons": ["*/10 * * * *"]
   }
 }

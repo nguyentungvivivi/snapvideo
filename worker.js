@@ -370,6 +370,20 @@ async function proxyToMediaBackend(request, backendBase, pathname, search, bodyT
 }
 
 export default {
+  async scheduled(_event, env) {
+    if (!env.DB) return;
+    try {
+      const backendBase = await resolveBackendUrl(env.DB, env);
+      if (backendBase) {
+        await fetch(`${backendBase}/api/health`, {
+          headers: { "user-agent": "SnapVid-Cloudflare-KeepAlive/1.0" },
+        });
+      }
+    } catch {
+      // Ignore transient wake-up errors
+    }
+  },
+
   async fetch(request, env) {
     const url = new URL(request.url);
     const { pathname, search } = url;
