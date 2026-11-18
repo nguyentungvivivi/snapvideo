@@ -1,8 +1,13 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "snapvid",
-  "compatibility_date": "2026-01-01",
+  "name": "snapvideo",
+  "main": "./worker.js",
+  "compatibility_date": "2026-11-18",
   "assets": {
-    "directory": "./static"
+    "directory": "./static",
+    "binding": "ASSETS"
+  },
+  "vars": {
+    "BACKEND_URL": ""
   }
 }
