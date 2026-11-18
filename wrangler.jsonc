@@ -3,10 +3,21 @@
   "name": "snapvideo",
   "main": "./worker.js",
   "compatibility_date": "2026-11-18",
+  "workers_dev": true,
+  "observability": {
+    "enabled": true
+  },
   "assets": {
     "directory": "./static",
     "binding": "ASSETS"
   },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "snapvideo-db",
+      "database_id": "7742535a-ed1a-426d-9135-e95b1c0eb540"
+    }
+  ],
   "vars": {
     "BACKEND_URL": ""
   }

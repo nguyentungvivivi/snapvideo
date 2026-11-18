@@ -40,6 +40,7 @@
     cfgBankAcc: document.getElementById("cfgBankAcc"),
     cfgBankOwner: document.getElementById("cfgBankOwner"),
     cfgBankQr: document.getElementById("cfgBankQr"),
+    cfgBackendUrl: document.getElementById("cfgBackendUrl"),
     saveConfigBtn: document.getElementById("saveConfigBtn"),
 
     createKeysForm: document.getElementById("createKeysForm"),
@@ -118,6 +119,7 @@
     el.cfgBankAcc.value = s.bank_account || "";
     el.cfgBankOwner.value = s.bank_owner || "";
     el.cfgBankQr.value = s.bank_qr_url || "";
+    if (el.cfgBackendUrl) el.cfgBackendUrl.value = s.backend_url || "";
     updateAnnPreview();
   }
 
@@ -344,6 +346,7 @@
       bank_account: el.cfgBankAcc.value,
       bank_owner: el.cfgBankOwner.value,
       bank_qr_url: el.cfgBankQr.value,
+      backend_url: el.cfgBackendUrl ? el.cfgBackendUrl.value.trim() : "",
     };
     const res = await adminFetch("/api/admin/settings", {
       method: "POST",

@@ -39,6 +39,7 @@ DEFAULT_SETTINGS: Dict[str, Any] = {
     "bank_account": "999988886666",
     "bank_owner": "QUAN TRI VIEN SNAPVID",
     "bank_qr_url": "",
+    "backend_url": "",
 }
 
 

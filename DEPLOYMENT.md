@@ -1,32 +1,21 @@
-# Hướng Dẫn Push GitHub & Triển Khai Cloudflare (Chi Phí 0đ)
+# SnapVid — Triển Khai Cloudflare Workers + D1 & GitHub (Chi Phí 0đ)
 
-## 1. Push mã nguồn lên GitHub
-Kho Git cục bộ đã được khởi tạo sẵn tại nhánh `main`. Tạo một repository trống trên GitHub (ví dụ `https://github.com/<username>/snapvid.git`), sau đó chạy:
+## 1. Hệ thống đã trực tuyến trên Cloudflare (24/7 — 0đ)
 
-```powershell
-git remote add origin https://github.com/<username>/snapvid.git
-git push -u origin main
-```
+- **Trang chủ người dùng:** `https://snapvideo.nguyenhuutung2305007.workers.dev/`
+- **Bảng điều khiển Admin:** `https://snapvideo.nguyenhuutung2305007.workers.dev/admin` *(Mật khẩu mặc định: `admin123`)*
+- **Cơ sở dữ liệu Edge:** Cloudflare D1 (`snapvideo-db`, vùng APAC) lưu vĩnh viễn toàn bộ cấu hình thông báo, giới hạn lượt `X`, mã VIP, yêu cầu nâng cấp và danh sách thiết bị khách — **không bao giờ bị reset**.
+- **Kho mã nguồn GitHub:** `https://github.com/nguyentungvivivi/snapvideo`
 
 ---
 
-## 2. Triển khai lên Cloudflare với chi phí 0đ
+## 2. Kết nối Máy chủ xử lý Video Python + FFmpeg (24/7 — 0đ)
 
-Vì lõi xử lý tải & ghép video 4K / MP3 320kbps sử dụng tiến trình gốc **Python + `yt-dlp` + `FFmpeg`** (môi trường Cloudflare Workers JS thuần không chạy trực tiếp file thực thi `ffmpeg`), có **2 mô hình chuẩn 0đ** kết hợp Cloudflare:
+Cloudflare Workers chạy toàn bộ giao diện, Admin, VIP, bộ đếm lượt `X`, ảnh bìa HD và SEO ở rìa mạng (Edge) với chi phí 0đ. Để xử lý tải và ghép video 4K / MP3 320kbps bằng **`yt-dlp` + `FFmpeg`** (24/7 kể cả khi tắt máy tính):
 
-### Cách A: Cloudflare Tunnel (Nhanh nhất — Xuất link HTTPS công khai ngay từ máy hiện tại)
-Phù hợp khi muốn phát trực tiếp máy chủ `http://127.0.0.1:8000` ra tên miền `https://` của Cloudflare ngay lập tức:
-```powershell
-winget install --id Cloudflare.cloudflared -e
-cloudflared tunnel --url http://127.0.0.1:8000
-```
-*(Hoặc gắn tên miền riêng miễn phí trong mục **Cloudflare Zero Trust → Networks → Tunnels**).*
+1. Tạo một Space miễn phí tại **[huggingface.co/new-space](https://huggingface.co/new-space)** → chọn **SDK: `Docker`** (*Blank*), gói **CPU basic (Free · 2 vCPU · 16GB RAM)**.
+2. Đẩy toàn bộ repo `https://github.com/nguyentungvivivi/snapvideo` vào Space đó (Space tự chạy theo `Dockerfile` ở cổng `7860`).
+3. Lấy đường dẫn Space của bạn (dạng `https://<ten-ban>-snapvideo.hf.space`).
+4. Mở **`https://snapvideo.nguyenhuutung2305007.workers.dev/admin`** → đăng nhập `admin123` → mở mục **Tuỳ chỉnh Bảng giá Gói VIP, Liên hệ & Kết nối** → dán đường dẫn Space vào ô **Link Máy chủ Xử lý Video Python+FFmpeg** → bấm **Lưu cấu hình & Đăng thông báo**.
 
-### Cách B: Chạy 24/7 không cần bật máy tính (Cloudflare Pages/CDN + Docker Cloud 0đ)
-1. **Backend (Python + FFmpeg + SQLite):** Kết nối repo GitHub vừa push vào **Hugging Face Spaces (chọn SDK: Docker — miễn phí 2 vCPU, 16GB RAM)** hoặc **Render Free** (dự án đã có sẵn `Dockerfile`).
-2. **Frontend / Tên miền trên Cloudflare:**
-   - Trỏ CNAME tên miền trên **Cloudflare DNS** (bật đám mây cam CDN chống DDoS) về địa chỉ Backend, **hoặc**
-   - Triển khai giao diện tĩnh lên **Cloudflare Workers / Pages** qua tệp `wrangler.jsonc`:
-     ```powershell
-     npx wrangler deploy
-     ```
+*(Hoặc nếu muốn test nhanh bằng máy tính cá nhân, chỉ cần chạy `python app.py` kèm `cloudflared tunnel --url http://127.0.0.1:8000` rồi dán link tunnel vào ô đó trong `/admin`!)*
