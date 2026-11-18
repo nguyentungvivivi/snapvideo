@@ -261,7 +261,7 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Mã máy</th>
+                  <th>Tài khoản / Mã máy</th>
                   <th>Gói &amp; Liên hệ</th>
                   <th>Trạng thái</th>
                   <th>Duyệt nhanh</th>
@@ -272,6 +272,33 @@
           </div>
         </section>
       </div>
+
+      <!-- Section 2.5: Registered User Accounts -->
+      <section class="panel-card">
+        <div class="panel-head">
+          <div>
+            <h2>👤 Quản lý Tài khoản Thành viên (Đồng bộ VIP đa thiết bị)</h2>
+            <p>Khách đăng ký tài khoản (<code>@username</code>) sẽ giữ nguyên VIP khi đổi điện thoại, laptop hoặc vào tab ẩn danh.</p>
+          </div>
+          <input type="text" id="userSearchInput" class="input search-box" placeholder="Tìm @username..." />
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tài khoản</th>
+                <th>Đã dùng hôm nay</th>
+                <th>Lượt thưởng</th>
+                <th>Trạng thái VIP</th>
+                <th>Tổng tải</th>
+                <th>Điều khiển nhanh</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody"></tbody>
+          </table>
+        </div>
+      </section>
 
       <!-- Section 3: Client Device Quota & Direct VIP Control -->
       <section class="panel-card">

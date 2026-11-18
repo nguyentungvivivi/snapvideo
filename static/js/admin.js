@@ -2,6 +2,7 @@
   const TOKEN_KEY = "snapvid_admin_token";
   let adminToken = sessionStorage.getItem(TOKEN_KEY) || localStorage.getItem(TOKEN_KEY) || "";
   let cachedClients = [];
+  let cachedUsers = [];
   let currentDailyLimit = 3;
 
   const el = {
@@ -51,6 +52,8 @@
     vipKeysTableBody: document.getElementById("vipKeysTableBody"),
     vipRequestsTableBody: document.getElementById("vipRequestsTableBody"),
 
+    userSearchInput: document.getElementById("userSearchInput"),
+    usersTableBody: document.getElementById("usersTableBody"),
     clientSearchInput: document.getElementById("clientSearchInput"),
     clientsTableBody: document.getElementById("clientsTableBody"),
 
@@ -210,6 +213,57 @@
     });
   }
 
+  function renderUsersTable() {
+    if (!el.usersTableBody) return;
+    const q = (el.userSearchInput?.value || "").trim().toLowerCase();
+    const list = cachedUsers.filter(
+      (u) => !q || u.username.toLowerCase().includes(q) || (u.display_name || "").toLowerCase().includes(q)
+    );
+
+    el.usersTableBody.innerHTML = "";
+    if (!list.length) {
+      el.usersTableBody.innerHTML = `<tr><td colspan="6" style="color:#8b98b1;text-align:center;">Chưa có tài khoản thành viên nào đăng ký.</td></tr>`;
+      return;
+    }
+
+    list.forEach((u) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><span class="code-chip">@${u.username}</span></td>
+        <td><b>${u.used_today}</b> / ${currentDailyLimit}</td>
+        <td>+${u.bonus_credits}</td>
+        <td>${u.is_vip ? `<span class="vip-pill">👑 ${u.vip_plan || "VIP"} (${u.vip_days_left}ng)</span>` : u.is_blocked ? '<span style="color:#ef4444">Đã khoá</span>' : "Free"}</td>
+        <td>${u.total_downloads}</td>
+        <td>
+          <div class="action-btns">
+            <button type="button" class="mini-btn" data-uname="${u.username}" data-act="reset_today">Reset hôm nay</button>
+            <button type="button" class="mini-btn" data-uname="${u.username}" data-act="add_bonus" data-val="5">+5 lượt</button>
+            <button type="button" class="mini-btn gold" data-uname="${u.username}" data-act="grant_vip_days" data-val="30" data-plan="VIP Tháng">+VIP 30ng</button>
+            <button type="button" class="mini-btn gold" data-uname="${u.username}" data-act="grant_vip_days" data-val="365" data-plan="VIP Năm">+VIP 1năm</button>
+            ${u.is_vip ? `<button type="button" class="mini-btn danger" data-uname="${u.username}" data-act="revoke_vip">Huỷ VIP</button>` : ""}
+            <button type="button" class="mini-btn danger" data-uname="${u.username}" data-act="toggle_block">${u.is_blocked ? "Mở khoá" : "Khoá"}</button>
+          </div>
+        </td>
+      `;
+      el.usersTableBody.appendChild(tr);
+    });
+
+    el.usersTableBody.querySelectorAll("[data-uname]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        await adminFetch(`/api/admin/users/${encodeURIComponent(btn.dataset.uname)}`, {
+          method: "POST",
+          body: JSON.stringify({
+            action: btn.dataset.act,
+            value: Number(btn.dataset.val || 0),
+            plan_name: btn.dataset.plan || "VIP Admin",
+          }),
+        });
+        toast(`Đã cập nhật tài khoản @${btn.dataset.uname}!`);
+        loadOverview();
+      });
+    });
+  }
+
   function renderClientsTable() {
     const q = (el.clientSearchInput.value || "").trim().toLowerCase();
     const list = cachedClients.filter(
@@ -276,6 +330,8 @@
       populateSettings(data.settings);
       renderVipKeys(data.vip_keys || []);
       renderVipRequests(data.vip_requests || []);
+      cachedUsers = data.users || [];
+      renderUsersTable();
       cachedClients = data.clients || [];
       renderClientsTable();
     } catch {
@@ -375,6 +431,7 @@
     loadOverview();
   });
 
+  if (el.userSearchInput) el.userSearchInput.addEventListener("input", renderUsersTable);
   el.clientSearchInput.addEventListener("input", renderClientsTable);
 
   el.changePwForm.addEventListener("submit", async (e) => {

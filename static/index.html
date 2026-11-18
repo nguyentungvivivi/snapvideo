@@ -105,6 +105,16 @@
           <span id="openVipBtnText">Nâng cấp VIP</span>
         </button>
 
+        <!-- Account / Login Button -->
+        <button type="button" class="icon-btn account-btn" id="accountBtn" title="Đăng nhập / Tài khoản đồng bộ VIP">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          <span class="btn-label" id="accountBtnLabel">Đăng nhập</span>
+          <span class="account-online-dot hidden" id="accountOnlineDot"></span>
+        </button>
+
         <button type="button" class="icon-btn" id="historyBtn" title="Lịch sử tải gần đây">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
@@ -482,6 +492,74 @@
     </div>
   </main>
 
+  <!-- User Account (Login / Register / Profile) Modal -->
+  <div class="modal-backdrop hidden" id="authModal">
+    <div class="modal-panel auth-modal-panel">
+      <div class="modal-header">
+        <h3 id="authModalTitle">👤 Tài khoản SnapVid</h3>
+        <button type="button" class="close-modal-btn" data-close="authModal" aria-label="Đóng">✕</button>
+      </div>
+
+      <!-- Guest Auth View -->
+      <div id="authGuestView">
+        <p class="modal-desc">
+          Tạo tài khoản miễn phí để gắn gói <strong>VIP</strong> cố định — đổi điện thoại, sang laptop khác, đổi mạng hay vào tab ẩn danh chỉ cần đăng nhập là dùng ngay!
+        </p>
+
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab active" data-auth-tab="login" id="authTabLogin">Đăng nhập</button>
+          <button type="button" class="auth-tab" data-auth-tab="register" id="authTabRegister">Đăng ký tài khoản</button>
+        </div>
+
+        <form id="authForm">
+          <label class="field-label" for="authUsernameInput">Tên đăng nhập hoặc Email</label>
+          <input
+            type="text"
+            id="authUsernameInput"
+            class="field-input"
+            placeholder="VD: tung123 hoặc email@gmail.com"
+            autocomplete="username"
+            required
+          />
+
+          <label class="field-label" for="authPasswordInput">Mật khẩu</label>
+          <input
+            type="password"
+            id="authPasswordInput"
+            class="field-input"
+            placeholder="Ít nhất 6 ký tự..."
+            autocomplete="current-password"
+            required
+          />
+
+          <div class="vip-feedback hidden" id="authFeedback"></div>
+
+          <button type="submit" class="primary-btn auth-submit-btn" id="authSubmitBtn">Đăng nhập</button>
+        </form>
+      </div>
+
+      <!-- Logged-in Profile View -->
+      <div id="authProfileView" class="hidden">
+        <div class="account-profile-card">
+          <div class="profile-avatar" id="profileAvatar">U</div>
+          <div class="profile-info">
+            <div class="profile-name" id="profileUsername">@username</div>
+            <div class="profile-sub" id="profileStatusText">Tài khoản Miễn phí</div>
+          </div>
+        </div>
+
+        <div class="profile-sync-note">
+          ✅ Tài khoản của bạn được lưu trên hệ thống đám mây Cloudflare D1 — đăng nhập ở bất kỳ thiết bị, trình duyệt ẩn danh hoặc mạng nào đều giữ nguyên quyền lợi VIP.
+        </div>
+
+        <div class="profile-actions">
+          <button type="button" class="vip-plan-btn" id="profileOpenVipBtn">👑 Nâng cấp / Gia hạn VIP</button>
+          <button type="button" class="ghost-btn" id="logoutAccountBtn">Đăng xuất tài khoản</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- VIP Upgrade & Activation Modal -->
   <div class="modal-backdrop hidden" id="vipModal">
     <div class="modal-panel vip-modal-panel">
@@ -492,13 +570,18 @@
 
       <div class="vip-device-box">
         <div>
-          <span class="device-label">Mã thiết bị của bạn (gửi mã này cho Admin khi nâng cấp):</span>
+          <span class="device-label" id="vipTargetLabel">Mã thiết bị của bạn (gửi mã này cho Admin khi nâng cấp):</span>
           <div class="device-code-row">
             <code id="vipClientIdDisplay">SV-........</code>
             <span class="vip-badge-status" id="vipModalStatusBadge">Tài khoản Free</span>
           </div>
         </div>
         <button type="button" class="copy-cid-btn" id="copyClientIdBtn">Sao chép mã</button>
+      </div>
+
+      <div class="vip-sync-nudge" id="vipSyncNudge">
+        <span>💡 <strong>Khuyên dùng:</strong> Đăng nhập tài khoản trước khi nạp VIP để dùng chung trên <strong>điện thoại, laptop, 4G/Wi-Fi &amp; tab ẩn danh</strong> không bị mất gói.</span>
+        <button type="button" class="nudge-auth-btn" id="vipLoginNudgeBtn">Đăng nhập / Tạo tài khoản</button>
       </div>
 
       <!-- Activate via VIP Key -->

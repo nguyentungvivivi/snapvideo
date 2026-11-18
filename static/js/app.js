@@ -2,6 +2,7 @@
   const STORAGE_KEYS = {
     THEME: "snapvid_theme",
     CLIENT_ID: "snapvid_client_id",
+    USER_TOKEN: "snapvid_user_token",
     HISTORY: "snapvid_history_v1",
     COOKIES_TXT: "snapvid_cookies_txt",
     BROWSER_COOKIES: "snapvid_browser_cookies",
@@ -9,6 +10,9 @@
 
   const state = {
     clientId: localStorage.getItem(STORAGE_KEYS.CLIENT_ID) || "",
+    userToken: localStorage.getItem(STORAGE_KEYS.USER_TOKEN) || "",
+    user: null,
+    authMode: "login",
     clientInfo: null,
     publicSettings: null,
     media: null,
@@ -35,6 +39,9 @@
     quotaText: document.getElementById("quotaText"),
     openVipBtn: document.getElementById("openVipBtn"),
     openVipBtnText: document.getElementById("openVipBtnText"),
+    accountBtn: document.getElementById("accountBtn"),
+    accountBtnLabel: document.getElementById("accountBtnLabel"),
+    accountOnlineDot: document.getElementById("accountOnlineDot"),
 
     themeToggleBtn: document.getElementById("themeToggleBtn"),
     iconSun: document.getElementById("iconSun"),
@@ -107,10 +114,30 @@
     landingMonthlyPrice: document.getElementById("landingMonthlyPrice"),
     landingYearlyPrice: document.getElementById("landingYearlyPrice"),
 
+    authModal: document.getElementById("authModal"),
+    authModalTitle: document.getElementById("authModalTitle"),
+    authGuestView: document.getElementById("authGuestView"),
+    authProfileView: document.getElementById("authProfileView"),
+    authTabLogin: document.getElementById("authTabLogin"),
+    authTabRegister: document.getElementById("authTabRegister"),
+    authForm: document.getElementById("authForm"),
+    authUsernameInput: document.getElementById("authUsernameInput"),
+    authPasswordInput: document.getElementById("authPasswordInput"),
+    authFeedback: document.getElementById("authFeedback"),
+    authSubmitBtn: document.getElementById("authSubmitBtn"),
+    profileAvatar: document.getElementById("profileAvatar"),
+    profileUsername: document.getElementById("profileUsername"),
+    profileStatusText: document.getElementById("profileStatusText"),
+    profileOpenVipBtn: document.getElementById("profileOpenVipBtn"),
+    logoutAccountBtn: document.getElementById("logoutAccountBtn"),
+
     vipModal: document.getElementById("vipModal"),
+    vipTargetLabel: document.getElementById("vipTargetLabel"),
     vipClientIdDisplay: document.getElementById("vipClientIdDisplay"),
     vipModalStatusBadge: document.getElementById("vipModalStatusBadge"),
     copyClientIdBtn: document.getElementById("copyClientIdBtn"),
+    vipSyncNudge: document.getElementById("vipSyncNudge"),
+    vipLoginNudgeBtn: document.getElementById("vipLoginNudgeBtn"),
     vipKeyInput: document.getElementById("vipKeyInput"),
     redeemKeyBtn: document.getElementById("redeemKeyBtn"),
     vipKeyFeedback: document.getElementById("vipKeyFeedback"),
@@ -134,6 +161,7 @@
   function apiHeaders(extra = {}) {
     const h = { ...extra };
     if (state.clientId) h["X-Client-ID"] = state.clientId;
+    if (state.userToken) h["X-User-Token"] = state.userToken;
     return h;
   }
 
@@ -187,7 +215,32 @@
     el.errorBanner.classList.remove("hidden");
   }
 
-  // Sync Client Quota & Settings UI
+  // Sync Client Quota, User Account & Settings UI
+  function syncUserUI(userObj) {
+    state.user = userObj || null;
+    if (state.user) {
+      const uname = state.user.username;
+      el.accountBtn.classList.add("logged-in");
+      el.accountOnlineDot.classList.remove("hidden");
+      el.accountBtnLabel.textContent = `@${uname.length > 14 ? uname.slice(0, 12) + "…" : uname}`;
+      el.authGuestView.classList.add("hidden");
+      el.authProfileView.classList.remove("hidden");
+      el.authModalTitle.textContent = "👤 Tài khoản của bạn";
+      el.profileAvatar.textContent = uname.charAt(0).toUpperCase();
+      el.profileUsername.textContent = `@${uname}`;
+      el.profileStatusText.textContent = state.user.is_vip
+        ? `👑 ${state.user.vip_plan || "VIP"} • Còn ${state.user.vip_days_left} ngày (Đồng bộ đa thiết bị)`
+        : "Tài khoản Miễn phí • Sẵn sàng nâng cấp VIP";
+    } else {
+      el.accountBtn.classList.remove("logged-in");
+      el.accountOnlineDot.classList.add("hidden");
+      el.accountBtnLabel.textContent = "Đăng nhập";
+      el.authGuestView.classList.remove("hidden");
+      el.authProfileView.classList.add("hidden");
+      el.authModalTitle.textContent = "👤 Tài khoản SnapVid";
+    }
+  }
+
   function syncClientStatus(clientInfo) {
     if (!clientInfo) return;
     state.clientInfo = clientInfo;
@@ -196,8 +249,18 @@
       localStorage.setItem(STORAGE_KEYS.CLIENT_ID, clientInfo.client_id);
     }
 
-    el.vipClientIdDisplay.textContent = state.clientId;
-    el.bankMemoDisplay.textContent = `VIP ${state.clientId}`;
+    const activeIdent = clientInfo.account_username ? `@${clientInfo.account_username}` : state.clientId;
+    el.vipClientIdDisplay.textContent = activeIdent;
+    el.bankMemoDisplay.textContent = `VIP ${activeIdent}`;
+
+    if (el.vipTargetLabel) {
+      el.vipTargetLabel.textContent = clientInfo.account_username
+        ? "Tài khoản nhận VIP (đồng bộ mọi điện thoại, laptop & tab ẩn danh):"
+        : "Mã thiết bị tạm thời (nên Đăng nhập tài khoản để giữ VIP khi đổi máy):";
+    }
+    if (el.vipSyncNudge) {
+      el.vipSyncNudge.classList.toggle("hidden", Boolean(clientInfo.account_username));
+    }
 
     el.quotaPillBtn.classList.remove("is-vip", "is-empty");
     if (clientInfo.is_vip) {
@@ -273,11 +336,28 @@
       const data = await resp.json();
       if (resp.ok) {
         syncPublicSettings(data.settings);
+        syncUserUI(data.user || null);
         syncClientStatus(data.client);
       }
     } catch {
       // Ignore transient network errors on initial load
     }
+  }
+
+  function setAuthMode(mode) {
+    state.authMode = mode;
+    const isReg = mode === "register";
+    el.authTabLogin.classList.toggle("active", !isReg);
+    el.authTabRegister.classList.toggle("active", isReg);
+    el.authSubmitBtn.textContent = isReg ? "Tạo tài khoản miễn phí" : "Đăng nhập";
+    el.authPasswordInput.setAttribute("autocomplete", isReg ? "new-password" : "current-password");
+    el.authFeedback.classList.add("hidden");
+  }
+
+  function openAuthModal(defaultMode = "login") {
+    el.authFeedback.classList.add("hidden");
+    if (!state.user) setAuthMode(defaultMode);
+    el.authModal.classList.remove("hidden");
   }
 
   function openVipModal(preferredPlan) {
@@ -803,6 +883,7 @@
       const data = await resp.json();
       if (!resp.ok) throw new Error(data.detail || "Mã không hợp lệ.");
 
+      if (data.user !== undefined) syncUserUI(data.user);
       syncClientStatus(data.client);
       el.vipKeyInput.value = "";
       el.vipKeyFeedback.textContent = data.message;
@@ -847,11 +928,84 @@
 
   el.copyClientIdBtn.addEventListener("click", async () => {
     try {
-      await navigator.clipboard.writeText(state.clientId);
+      const textToCopy = state.clientInfo?.account_username
+        ? `@${state.clientInfo.account_username}`
+        : state.clientId;
+      await navigator.clipboard.writeText(textToCopy);
       el.copyClientIdBtn.textContent = "Đã sao chép!";
       setTimeout(() => { el.copyClientIdBtn.textContent = "Sao chép mã"; }, 1600);
     } catch {
       // Fallback ignored
+    }
+  });
+
+  // User Account Events (Login / Register / Logout)
+  el.accountBtn.addEventListener("click", () => openAuthModal("login"));
+  el.vipLoginNudgeBtn.addEventListener("click", () => {
+    el.vipModal.classList.add("hidden");
+    openAuthModal("register");
+  });
+  el.profileOpenVipBtn.addEventListener("click", () => {
+    el.authModal.classList.add("hidden");
+    openVipModal();
+  });
+  el.authTabLogin.addEventListener("click", () => setAuthMode("login"));
+  el.authTabRegister.addEventListener("click", () => setAuthMode("register"));
+
+  el.authForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const username = el.authUsernameInput.value.trim();
+    const password = el.authPasswordInput.value;
+    if (!username || !password) return;
+
+    el.authSubmitBtn.disabled = true;
+    el.authFeedback.classList.add("hidden");
+    const endpoint = state.authMode === "register" ? "/api/auth/register" : "/api/auth/login";
+
+    try {
+      const resp = await fetch(endpoint, {
+        method: "POST",
+        headers: apiHeaders({ "Content-Type": "application/json" }),
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.detail || "Không thể xác thực tài khoản.");
+
+      if (data.token) {
+        state.userToken = data.token;
+        localStorage.setItem(STORAGE_KEYS.USER_TOKEN, data.token);
+      }
+      syncUserUI(data.user);
+      syncClientStatus(data.client);
+      el.authPasswordInput.value = "";
+      el.authFeedback.textContent = data.message;
+      el.authFeedback.className = "vip-feedback ok";
+      showError(null);
+    } catch (err) {
+      el.authFeedback.textContent = err.message;
+      el.authFeedback.className = "vip-feedback err";
+    } finally {
+      el.authSubmitBtn.disabled = false;
+    }
+  });
+
+  el.logoutAccountBtn.addEventListener("click", async () => {
+    try {
+      const resp = await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: apiHeaders(),
+      });
+      const data = await resp.json();
+      state.userToken = "";
+      localStorage.removeItem(STORAGE_KEYS.USER_TOKEN);
+      syncUserUI(null);
+      if (data.client) syncClientStatus(data.client);
+      el.authModal.classList.add("hidden");
+    } catch {
+      state.userToken = "";
+      localStorage.removeItem(STORAGE_KEYS.USER_TOKEN);
+      syncUserUI(null);
+      el.authModal.classList.add("hidden");
     }
   });
 
@@ -976,7 +1130,7 @@
     });
   });
 
-  [el.vipModal, el.historyModal, el.settingsModal].forEach((modal) => {
+  [el.authModal, el.vipModal, el.historyModal, el.settingsModal].forEach((modal) => {
     modal.addEventListener("click", (e) => {
       if (e.target === modal) modal.classList.add("hidden");
     });
@@ -984,7 +1138,7 @@
 
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
-      [el.vipModal, el.historyModal, el.settingsModal].forEach((m) => m.classList.add("hidden"));
+      [el.authModal, el.vipModal, el.historyModal, el.settingsModal].forEach((m) => m.classList.add("hidden"));
     }
   });
 
