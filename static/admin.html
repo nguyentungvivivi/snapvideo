@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#070a10" />
+  <title>SnapVid Admin — Bảng Điều Khiển Quản Trị &amp; VIP</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/admin.css" />
+</head>
+<body>
+  <!-- Admin Login Screen -->
+  <div class="login-screen" id="loginScreen">
+    <form class="login-card" id="loginForm">
+      <div class="login-brand">
+        <span class="brand-badge">SV</span>
+        <div>
+          <h1>SnapVid Admin</h1>
+          <p>Đăng nhập bảng điều khiển quản trị hệ thống</p>
+        </div>
+      </div>
+
+      <label class="label" for="adminPasswordInput">Mật khẩu quản trị</label>
+      <input
+        type="password"
+        id="adminPasswordInput"
+        class="input"
+        placeholder="Nhập mật khẩu Admin (mặc định: admin123)"
+        required
+      />
+      <div class="login-err hidden" id="loginError"></div>
+      <button type="submit" class="btn-primary w-full">Đăng nhập quản trị</button>
+      <a href="/" class="back-home-link">← Quay về trang chủ người dùng</a>
+    </form>
+  </div>
+
+  <!-- Admin Dashboard Shell -->
+  <div class="admin-shell hidden" id="adminShell">
+    <header class="admin-topbar">
+      <div class="admin-topbar-inner">
+        <div class="topbar-left">
+          <span class="brand-badge">SV</span>
+          <strong>SnapVid Control Center</strong>
+          <a href="/" target="_blank" class="view-site-pill">Xem trang khách ↗</a>
+        </div>
+        <div class="topbar-right">
+          <button type="button" class="btn-ghost" id="refreshAllBtn">↻ Làm mới dữ liệu</button>
+          <button type="button" class="btn-ghost" id="logoutBtn">Đăng xuất</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin-container">
+      <div class="toast hidden" id="adminToast"></div>
+
+      <!-- KPI Stats Grid -->
+      <section class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">Lượt tải hôm nay</span>
+          <strong class="stat-value" id="statTodayDl">0</strong>
+          <span class="stat-sub">Tổng cộng: <b id="statTotalDl">0</b> lượt</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Thiết bị truy cập hôm nay</span>
+          <strong class="stat-value" id="statActiveClients">0</strong>
+          <span class="stat-sub">Tổng thiết bị: <b id="statTotalClients">0</b></span>
+        </div>
+        <div class="stat-card gold">
+          <span class="stat-label">Tài khoản VIP đang hoạt động</span>
+          <strong class="stat-value" id="statActiveVips">0</strong>
+          <span class="stat-sub">Không giới hạn lượt tải</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Yêu cầu nâng cấp chờ duyệt</span>
+          <strong class="stat-value" id="statPendingReqs">0</strong>
+          <span class="stat-sub">Khách gửi từ trang chủ</span>
+        </div>
+      </section>
+
+      <!-- Section 1: Daily Quota X & Announcement Broadcast -->
+      <section class="panel-card">
+        <div class="panel-head">
+          <div>
+            <h2>📢 Cấu hình Giới hạn Lượt dùng (X lần/máy) &amp; Bảng Thông Báo Khách</h2>
+            <p>Tuỳ chỉnh số lượt miễn phí hằng ngày cho mỗi máy khách và phát thông báo trực tiếp lên đầu trang web.</p>
+          </div>
+          <button type="button" class="btn-primary" id="saveConfigBtn">Lưu cấu hình &amp; Đăng thông báo</button>
+        </div>
+
+        <div class="form-grid-2">
+          <!-- Quota Box -->
+          <div class="sub-box">
+            <h3>⚡ Giới hạn lượt miễn phí hằng ngày / mỗi thiết bị (X)</h3>
+            <p class="hint">Mỗi máy khách (theo Cookie + IP thiết bị) sẽ chỉ được tải miễn phí <b>X</b> lần mỗi ngày trước khi cần nâng cấp VIP.</p>
+
+            <div class="quota-control-row">
+              <input type="number" id="cfgDailyLimit" class="input limit-input" min="0" max="10000" value="3" />
+              <div class="quick-presets">
+                <button type="button" class="preset-btn" data-set-limit="1">1 lượt</button>
+                <button type="button" class="preset-btn" data-set-limit="3">3 lượt (Mặc định)</button>
+                <button type="button" class="preset-btn" data-set-limit="5">5 lượt</button>
+                <button type="button" class="preset-btn" data-set-limit="10">10 lượt</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Announcement Broadcast Box -->
+          <div class="sub-box">
+            <div class="row-between">
+              <h3>📣 Thanh thông báo đầu trang chủ</h3>
+              <label class="switch-label">
+                <input type="checkbox" id="cfgAnnEnabled" checked />
+                <span>Hiển thị thông báo</span>
+              </label>
+            </div>
+            <p class="hint">Mẹo: Gõ <code>{limit}</code> trong câu thông báo để hệ thống tự điền số lượt miễn phí hôm nay!</p>
+
+            <textarea id="cfgAnnText" class="textarea" rows="3" placeholder="Nhập nội dung thông báo cho khách truy cập..."></textarea>
+
+            <div class="ann-options-row">
+              <div>
+                <label class="label-sm">Màu sắc nổi bật</label>
+                <select id="cfgAnnStyle" class="input-sm">
+                  <option value="emerald">Xanh Ngọc (Emerald)</option>
+                  <option value="gold">Vàng Hoàng Gia (VIP Gold)</option>
+                  <option value="ocean">Xanh Đại Dương (Ocean)</option>
+                </select>
+              </div>
+              <div>
+                <label class="label-sm">Nút kêu gọi (CTA)</label>
+                <input type="text" id="cfgAnnCta" class="input-sm" value="Nâng cấp VIP ngay" />
+              </div>
+              <label class="switch-label mt-auto">
+                <input type="checkbox" id="cfgAnnMarquee" />
+                <span>Chữ chạy ngang (Marquee)</span>
+              </label>
+            </div>
+
+            <div class="live-preview-bar" id="annLivePreview">Xem trước thông báo...</div>
+          </div>
+        </div>
+
+        <!-- VIP Pricing & Admin Contact Settings -->
+        <details class="contact-settings-acc">
+          <summary>⚙️ Tuỳ chỉnh Bảng giá Gói VIP, Liên hệ Zalo/Telegram &amp; Tài khoản Ngân hàng nhận tiền</summary>
+          <div class="form-grid-3 mt-14">
+            <div>
+              <label class="label-sm">Giá Gói VIP Tháng</label>
+              <input type="text" id="cfgPriceMonth" class="input" placeholder="49.000đ / tháng" />
+            </div>
+            <div>
+              <label class="label-sm">Giá Gói VIP Năm</label>
+              <input type="text" id="cfgPriceYear" class="input" placeholder="349.000đ / năm" />
+            </div>
+            <div>
+              <label class="label-sm">SĐT Hotline / Zalo hiển thị</label>
+              <input type="text" id="cfgPhone" class="input" placeholder="0900.000.000" />
+            </div>
+            <div>
+              <label class="label-sm">Link Zalo Admin</label>
+              <input type="text" id="cfgZalo" class="input" placeholder="https://zalo.me/..." />
+            </div>
+            <div>
+              <label class="label-sm">Link Telegram Admin</label>
+              <input type="text" id="cfgTelegram" class="input" placeholder="https://t.me/..." />
+            </div>
+            <div>
+              <label class="label-sm">Link Facebook / Messenger</label>
+              <input type="text" id="cfgFacebook" class="input" placeholder="https://m.me/..." />
+            </div>
+            <div>
+              <label class="label-sm">Tên Ngân hàng</label>
+              <input type="text" id="cfgBankName" class="input" placeholder="MB Bank" />
+            </div>
+            <div>
+              <label class="label-sm">Số Tài khoản</label>
+              <input type="text" id="cfgBankAcc" class="input" placeholder="999988886666" />
+            </div>
+            <div>
+              <label class="label-sm">Chủ Tài khoản</label>
+              <input type="text" id="cfgBankOwner" class="input" placeholder="NGUYEN VAN A" />
+            </div>
+            <div class="col-span-3">
+              <label class="label-sm">Link ảnh QR Ngân hàng / VietQR (tuỳ chọn)</label>
+              <input type="text" id="cfgBankQr" class="input" placeholder="https://img.vietqr.io/image/..." />
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <!-- Section 2: Pending VIP Upgrade Requests & VIP Key Generator -->
+      <div class="form-grid-2">
+        <!-- Create VIP Keys -->
+        <section class="panel-card">
+          <div class="panel-head">
+            <div>
+              <h2>🔑 Tạo Mã Kích Hoạt VIP (License Key)</h2>
+              <p>Tạo mã gửi cho khách nhập để kích hoạt VIP tự động.</p>
+            </div>
+          </div>
+
+          <form id="createKeysForm" class="key-gen-form">
+            <div class="form-grid-2">
+              <div>
+                <label class="label-sm">Loại gói VIP</label>
+                <select id="keyPlanPreset" class="input">
+                  <option value="VIP Tháng|30">Gói VIP Tháng (30 ngày)</option>
+                  <option value="VIP Năm|365">Gói VIP Năm (365 ngày)</option>
+                  <option value="VIP Tuần|7">Dùng thử VIP Tuần (7 ngày)</option>
+                  <option value="VIP Vĩnh Viễn|3650">VIP Vĩnh Viễn (3650 ngày)</option>
+                </select>
+              </div>
+              <div>
+                <label class="label-sm">Số thiết bị dùng / 1 mã</label>
+                <input type="number" id="keyMaxUses" class="input" value="1" min="1" max="1000" />
+              </div>
+              <div>
+                <label class="label-sm">Số lượng mã cần tạo</label>
+                <input type="number" id="keyQuantity" class="input" value="1" min="1" max="50" />
+              </div>
+              <div>
+                <label class="label-sm">Ghi chú khách hàng</label>
+                <input type="text" id="keyNote" class="input" placeholder="VD: Khách Zalo Minh..." />
+              </div>
+            </div>
+            <button type="submit" class="btn-gold w-full mt-10">+ Xuất Mã Kích Hoạt VIP</button>
+          </form>
+
+          <div class="table-wrap mt-14">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Mã VIP</th>
+                  <th>Gói / Ngày</th>
+                  <th>Đã dùng</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="vipKeysTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Pending Customer VIP Orders -->
+        <section class="panel-card">
+          <div class="panel-head">
+            <div>
+              <h2>📩 Yêu cầu Nâng cấp VIP từ Khách</h2>
+              <p>Duyệt 1 chạm để mở VIP trực tiếp cho mã thiết bị của khách.</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Mã máy</th>
+                  <th>Gói &amp; Liên hệ</th>
+                  <th>Trạng thái</th>
+                  <th>Duyệt nhanh</th>
+                </tr>
+              </thead>
+              <tbody id="vipRequestsTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- Section 3: Client Device Quota & Direct VIP Control -->
+      <section class="panel-card">
+        <div class="panel-head">
+          <div>
+            <h2>💻 Quản lý Thiết bị Khách Truy cập (Client Devices)</h2>
+            <p>Theo dõi số lượt đã dùng hôm nay của từng máy khách, reset lượt, tặng thêm lượt hoặc cấp VIP trực tiếp theo mã máy <code>SV-XXXX</code>.</p>
+          </div>
+          <input type="text" id="clientSearchInput" class="input search-box" placeholder="Tìm mã máy SV-... hoặc IP" />
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Mã thiết bị</th>
+                <th>IP gần nhất</th>
+                <th>Đã dùng hôm nay</th>
+                <th>Lượt thưởng</th>
+                <th>Trạng thái VIP</th>
+                <th>Tổng tải</th>
+                <th>Điều khiển nhanh</th>
+              </tr>
+            </thead>
+            <tbody id="clientsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Section 4: Admin Password Security -->
+      <section class="panel-card compact">
+        <form id="changePwForm" class="pw-row">
+          <strong>🔒 Đổi mật khẩu Admin:</strong>
+          <input type="password" id="oldPwInput" class="input-sm" placeholder="Mật khẩu hiện tại" required />
+          <input type="password" id="newPwInput" class="input-sm" placeholder="Mật khẩu mới (>=4 ký tự)" required />
+          <button type="submit" class="btn-ghost">Cập nhật mật khẩu</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/js/admin.js"></script>
+</body>
+</html>

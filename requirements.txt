@@ -1,0 +1,5 @@
+fastapi>=0.110.0
+uvicorn>=0.29.0
+yt-dlp>=2026.1.1
+static-ffmpeg>=2.7
+pydantic>=2.0.0

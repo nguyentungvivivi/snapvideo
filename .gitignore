@@ -1,0 +1,25 @@
+# Python & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# Runtime Data & Temp Downloads (Never commit user DB or media files)
+downloads/
+data/*.db
+data/*.db-shm
+data/*.db-wal
+snapvid_cookies_*.txt
+
+# Secrets & Environment
+.env
+.env.*
+cookies.txt
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

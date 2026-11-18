@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#06080d" />
+  <title>SnapVid — Tải Video YouTube, Reels, TikTok, Facebook &amp; X Không Quảng Cáo (MP4 4K / MP3 320kbps)</title>
+  <meta name="description" content="Công cụ tải video YouTube, Shorts, Instagram Reels, Facebook, X (Twitter) và TikTok tốc độ cao, không quảng cáo. Xuất MP4 Full HD, 2K, 4K và tách nhạc MP3 320kbps tức thì." />
+  <meta name="keywords" content="tải video youtube, tải reels instagram, tải video facebook, tải video x twitter, tải shorts youtube, chuyển youtube sang mp3 320kbps, tải youtube 4k không quảng cáo, snapvid" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="vi_VN" />
+  <meta property="og:title" content="SnapVid — Tải Video Đa Nền Tảng Tức Thì, Không Quảng Cáo" />
+  <meta property="og:description" content="Dán link tải ngay video MP4 4K, Shorts, Reels và nhạc MP3 320kbps cực mượt, không chèn quảng cáo." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="SnapVid — Trình Tải Video 4K &amp; MP3 Không Quảng Cáo" />
+
+  <!-- Schema.org Structured Data (SEO Rich Results) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "name": "SnapVid",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "All",
+        "description": "Web tải video YouTube, Instagram Reels, Facebook, X Twitter, Shorts và TikTok chất lượng gốc 4K, MP3 320kbps không quảng cáo.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "VND"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "SnapVid hỗ trợ tải từ những nền tảng nào?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "SnapVid hỗ trợ tải video và âm thanh từ YouTube, YouTube Shorts, Instagram, Instagram Reels, Facebook, Facebook Reels, X (Twitter), TikTok và Threads."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Làm sao để tải không giới hạn lượt mỗi ngày?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Mỗi thiết bị được tặng lượt tải miễn phí hằng ngày. Để mở khoá tải không giới hạn 24/7 ở chất lượng 4K và MP3 320kbps, bạn có thể nâng cấp gói VIP Tháng hoặc VIP Năm qua Admin."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div class="ambient-glow" aria-hidden="true"></div>
+
+  <!-- Live Admin Broadcast Banner -->
+  <div class="announcement-bar hidden" id="announcementBar" data-style="emerald">
+    <div class="container announcement-inner">
+      <div class="announcement-content" id="announcementWrap">
+        <span class="ann-text" id="announcementText"></span>
+      </div>
+      <button type="button" class="ann-cta-btn" id="announcementCtaBtn">Nâng cấp VIP</button>
+    </div>
+  </div>
+
+  <!-- Top Navigation -->
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a href="/" class="brand" id="brandReset">
+        <span class="brand-mark">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v12" />
+            <path d="m7 10 5 5 5-5" />
+            <path d="M5 21h14" />
+          </svg>
+        </span>
+        <span class="brand-name">SnapVid</span>
+        <span class="noads-tag">No Ads</span>
+      </a>
+
+      <div class="topbar-actions">
+        <!-- Daily Quota / VIP Status Pill -->
+        <button type="button" class="quota-pill" id="quotaPillBtn" title="Bấm để xem mã thiết bị &amp; quyền lợi tài khoản">
+          <span class="quota-dot" id="quotaDot"></span>
+          <span id="quotaText">Còn 3/3 lượt</span>
+        </button>
+
+        <!-- Upgrade VIP CTA -->
+        <button type="button" class="vip-nav-btn" id="openVipBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
+          </svg>
+          <span id="openVipBtnText">Nâng cấp VIP</span>
+        </button>
+
+        <button type="button" class="icon-btn" id="historyBtn" title="Lịch sử tải gần đây">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+            <path d="M12 7v5l4 2" />
+          </svg>
+          <span class="btn-label">Lịch sử</span>
+          <span class="count-badge hidden" id="historyCount">0</span>
+        </button>
+
+        <button type="button" class="icon-btn" id="settingsBtn" title="Cài đặt Cookies nâng cao">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          <span class="cookie-dot hidden" id="cookieActiveDot"></span>
+        </button>
+
+        <button type="button" class="icon-btn" id="themeToggleBtn" title="Đổi chế độ Sáng / Tối">
+          <svg id="iconSun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+          </svg>
+          <svg id="iconMoon" class="hidden" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="container main-content">
+    <!-- Hero & Input Omnibox -->
+    <section class="hero-section">
+      <div class="trust-badges-top">
+        <span class="trust-pill">🛡️ 100% Không quảng cáo</span>
+        <span class="trust-pill">⚡ Xử lý tức thì đa luồng</span>
+        <span class="trust-pill">🎞️ MP4 4K · Shorts · Reels · MP3 320kbps</span>
+      </div>
+
+      <h1 class="hero-title">
+        Tải Video &amp; Âm Thanh <span class="text-gradient">Đa Nền Tảng</span> Tức Thì
+      </h1>
+      <p class="hero-subtitle">
+        Dán liên kết từ YouTube, Shorts, Instagram Reels, Facebook, X (Twitter) hoặc TikTok — tải xuống nguyên bản không chèn logo, không popup quảng cáo.
+      </p>
+
+      <!-- Supported Platforms Strip -->
+      <div class="platform-strip" aria-label="Các nền tảng hỗ trợ">
+        <span class="plat-chip">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="c-yt"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.4 31.4 0 0 0 0 12a31.4 31.4 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.4 31.4 0 0 0 24 12a31.4 31.4 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+          YouTube &amp; Shorts
+        </span>
+        <span class="plat-chip">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="c-ig"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          Instagram &amp; Reels
+        </span>
+        <span class="plat-chip">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="c-x"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          X / Twitter
+        </span>
+        <span class="plat-chip">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="c-fb"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          Facebook &amp; Reels
+        </span>
+        <span class="plat-chip">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="c-tt"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
+          TikTok &amp; Threads
+        </span>
+      </div>
+
+      <!-- URL Input Form -->
+      <form class="omnibox" id="analyzeForm" autocomplete="off">
+        <div class="omnibox-leading">
+          <span class="detected-pill hidden" id="detectedBadge">URL</span>
+          <svg id="defaultLinkIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+          </svg>
+        </div>
+
+        <input
+          type="text"
+          id="urlInput"
+          class="omnibox-input"
+          placeholder="Dán link YouTube, Shorts, Instagram Reels, Facebook, X hoặc TikTok tại đây..."
+          aria-label="Đường dẫn video mạng xã hội"
+          spellcheck="false"
+        />
+
+        <div class="omnibox-trailing">
+          <button type="button" class="ghost-action" id="pasteBtn" title="Dán từ bộ nhớ tạm">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+            </svg>
+            <span>Dán link</span>
+          </button>
+
+          <button type="button" class="clear-btn hidden" id="clearBtn" title="Xoá đường dẫn" aria-label="Xoá">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+
+          <button type="submit" class="primary-btn" id="analyzeBtn">
+            <span id="analyzeBtnText">Tải ngay</span>
+            <svg id="analyzeBtnArrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M13 5l7 7-7 7" />
+            </svg>
+            <span class="spinner hidden" id="analyzeSpinner"></span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Error Banner -->
+      <div class="alert-banner hidden" id="errorBanner" role="alert">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        <div class="alert-content">
+          <span id="errorText"></span>
+          <button type="button" class="inline-vip-btn hidden" id="errorUpgradeBtn">Mở khoá VIP ngay →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Analyzing Skeleton State -->
+    <section class="analyzing-card hidden" id="analyzingState">
+      <div class="pipeline-steps">
+        <div class="pipe-step active">
+          <span class="pipe-dot"></span>
+          <span>Nhận diện nền tảng</span>
+        </div>
+        <span class="pipe-arrow">→</span>
+        <div class="pipe-step active">
+          <span class="pipe-dot pulse"></span>
+          <span>Trích xuất luồng CDN &amp; chất lượng gốc</span>
+        </div>
+        <span class="pipe-arrow">→</span>
+        <div class="pipe-step">
+          <span class="pipe-dot"></span>
+          <span>Sẵn sàng tải xuống</span>
+        </div>
+      </div>
+      <div class="skeleton-grid">
+        <div class="skeleton-box skel-thumb"></div>
+        <div class="skeleton-lines">
+          <div class="skeleton-box skel-line w-80"></div>
+          <div class="skeleton-box skel-line w-50"></div>
+          <div class="skeleton-box skel-block"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Extracted Media Result & Format Picker -->
+    <section class="result-card hidden" id="resultSection">
+      <div class="result-grid">
+        <!-- Left Column: Media Preview -->
+        <div class="media-preview-col">
+          <div class="thumb-wrapper" id="thumbWrapper">
+            <img id="thumbBlurBg" class="thumb-blur-bg" alt="" aria-hidden="true" />
+            <img id="thumbImg" class="thumb-img" alt="Ảnh xem trước nội dung" />
+            <div class="thumb-badges-top">
+              <span class="media-plat-badge" id="resultPlatformBadge">YouTube</span>
+              <span class="aspect-badge hidden" id="verticalBadge">9:16 Dọc</span>
+            </div>
+            <span class="duration-pill hidden" id="resultDuration">00:00</span>
+          </div>
+
+          <div class="carousel-bar hidden" id="carouselBar"></div>
+
+          <div class="media-meta">
+            <h2 class="media-title" id="resultTitle">Tiêu đề nội dung</h2>
+            <div class="media-submeta">
+              <span class="meta-author" id="resultAuthor">@channel</span>
+              <span class="meta-sep" id="viewsSep">•</span>
+              <span class="meta-views" id="resultViews"></span>
+            </div>
+
+            <div class="preview-actions">
+              <a href="#" class="subtle-link" id="downloadThumbLink" target="_blank" rel="noopener">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                  <circle cx="9" cy="9" r="2" />
+                  <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                </svg>
+                Tải ảnh bìa HD
+              </a>
+              <a href="#" class="subtle-link" id="openSourceLink" target="_blank" rel="noopener">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+                Mở liên kết gốc
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Format & Quality Selector -->
+        <div class="format-picker-col">
+          <div class="mode-tabs" id="modeTabsBar" role="tablist">
+            <button type="button" class="mode-tab active" data-mode="video" id="tabVideo" role="tab" aria-selected="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="14" x="3" y="5" rx="2" />
+                <polygon points="10 9 15 12 10 15 10 9" fill="currentColor" stroke="none" />
+              </svg>
+              <span id="tabVideoLabel">Video (MP4 / WebM)</span>
+            </button>
+            <button type="button" class="mode-tab" data-mode="audio" id="tabAudio" role="tab" aria-selected="false">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18V5l12-2v13" />
+                <circle cx="6" cy="18" r="3" />
+                <circle cx="18" cy="16" r="3" />
+              </svg>
+              <span>Âm thanh (MP3 / WAV)</span>
+            </button>
+          </div>
+
+          <div class="container-bar" id="videoContainerBar">
+            <span class="bar-label">Định dạng xuất:</span>
+            <div class="pill-group">
+              <button type="button" class="format-pill active" data-ext="mp4">
+                MP4 <span class="pill-hint">Tương thích mọi thiết bị</span>
+              </button>
+              <button type="button" class="format-pill" data-ext="webm">
+                WebM <span class="pill-hint">Chuẩn gốc</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="quality-section-label" id="qualitySectionLabel">Chọn độ phân giải</div>
+          <div class="quality-grid" id="qualityGrid" role="radiogroup"></div>
+
+          <div class="download-action-area">
+            <button type="button" class="download-cta-btn" id="downloadBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              <span id="downloadBtnLabel">Tải xuống MP4 · 1080p</span>
+            </button>
+
+            <div class="progress-card hidden" id="progressCard">
+              <div class="progress-header">
+                <span class="progress-stage" id="progressStage">Đang chuẩn bị...</span>
+                <span class="progress-pct" id="progressPct">0%</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+              </div>
+              <div class="progress-meta">
+                <span id="progressSpeed"></span>
+                <span id="progressEta"></span>
+              </div>
+              <div class="manual-save-row hidden" id="manualSaveRow">
+                <span>Tệp đã sẵn sàng!</span>
+                <a href="#" id="manualSaveLink" class="manual-save-btn">Lưu tệp về máy</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- High-Converting Marketing & SEO Sections -->
+    <div id="landingSections">
+      <!-- Why Users Choose SnapVid -->
+      <section class="section-block" aria-labelledby="whyHeading">
+        <div class="section-head">
+          <h2 id="whyHeading">Vì sao hàng ngàn người dùng chọn SnapVid mỗi ngày?</h2>
+          <p>Trải nghiệm tải nội dung sạch, mượt, tối giản tuyệt đối — đúng chất công cụ chuyên nghiệp.</p>
+        </div>
+
+        <div class="features-grid">
+          <article class="feature-card">
+            <div class="feat-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3>Không Quảng Cáo &amp; Không Logo</h3>
+            <p>Giao diện sạch 100%, không chèn popup độc hại, không chuyển hướng tab lạ, giữ nguyên chất lượng khung hình gốc.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feat-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <h3>Tải Tức Thì Đa Luồng &amp; 4K</h3>
+            <p>Tự động ghép luồng hình ảnh DASH 1080p / 2K / 4K 60fps và âm thanh chuẩn H.264/AAC qua FFmpeg tốc độ cao.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feat-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </div>
+            <h3>Tối Ưu Reels, Shorts &amp; Mọi Định Dạng</h3>
+            <p>Nhận diện chuẩn khung hình dọc 9:16 cho Shorts/Reels, bài đăng nhiều video (Carousel) và xuất MP4, WebM, MP3 320kbps, M4A, WAV.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- Transparent Plans Comparison -->
+      <section class="section-block" aria-labelledby="pricingHeading">
+        <div class="section-head">
+          <h2 id="pricingHeading">Linh hoạt cho nhu cầu cá nhân &amp; chuyên nghiệp</h2>
+          <p>Dùng thử miễn phí mỗi ngày hoặc nâng cấp VIP để mở khoá tải không giới hạn trên thiết bị của bạn.</p>
+        </div>
+
+        <div class="pricing-grid">
+          <div class="plan-card">
+            <div class="plan-name">Khách Miễn Phí</div>
+            <div class="plan-price">0đ <span>/ mỗi ngày</span></div>
+            <ul class="plan-perks">
+              <li>✓ Tặng <strong id="freeLimitInline">3</strong> lượt tải miễn phí mỗi ngày / thiết bị</li>
+              <li>✓ Đầy đủ MP4 HD/Full HD &amp; MP3 320kbps</li>
+              <li>✓ Hỗ trợ YouTube, Reels, Shorts, FB, X, TikTok</li>
+              <li>✓ Không chèn quảng cáo</li>
+            </ul>
+            <button type="button" class="ghost-plan-btn" onclick="document.getElementById('urlInput').focus()">Dùng miễn phí ngay</button>
+          </div>
+
+          <div class="plan-card featured">
+            <span class="popular-ribbon">Được chọn nhiều nhất</span>
+            <div class="plan-name">👑 Gói VIP Tháng</div>
+            <div class="plan-price" id="landingMonthlyPrice">49.000đ <span>/ tháng</span></div>
+            <ul class="plan-perks">
+              <li>✓ <strong>Không giới hạn</strong> số lượt tải 24/7</li>
+              <li>✓ Mở khoá tối đa 4K Ultra HD 60fps &amp; WAV Lossless</li>
+              <li>✓ Ưu tiên luồng xử lý tốc độ cao đa định dạng</li>
+              <li>✓ Kích hoạt tức thì bằng Mã VIP hoặc qua Admin</li>
+            </ul>
+            <button type="button" class="vip-plan-btn" data-open-vip="VIP Tháng">Đăng ký VIP Tháng</button>
+          </div>
+
+          <div class="plan-card">
+            <div class="plan-name">💎 Gói VIP Năm</div>
+            <div class="plan-price" id="landingYearlyPrice">349.000đ <span>/ năm</span></div>
+            <ul class="plan-perks">
+              <li>✓ Toàn bộ quyền lợi VIP <strong>365 ngày</strong> (Tiết kiệm &gt;40%)</li>
+              <li>✓ Không giới hạn lượt tải &amp; độ phân giải 4K</li>
+              <li>✓ Hỗ trợ kỹ thuật ưu tiên 1-1 trực tiếp từ Admin</li>
+              <li>✓ Bảo hành chuyển đổi mã thiết bị miễn phí</li>
+            </ul>
+            <button type="button" class="ghost-plan-btn" data-open-vip="VIP Năm">Đăng ký VIP Năm</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEO FAQ Accordion -->
+      <section class="section-block faq-section" aria-labelledby="faqHeading">
+        <div class="section-head">
+          <h2 id="faqHeading">Câu hỏi thường gặp (FAQ)</h2>
+        </div>
+        <div class="faq-list">
+          <details class="faq-item" open>
+            <summary>Mỗi ngày máy của tôi được tải miễn phí bao nhiêu lần?</summary>
+            <p>Mặc định mỗi thiết bị khách được cấp <strong id="faqLimitNum">3</strong> lượt tải miễn phí mỗi ngày (tự động làm mới vào 00:00 hằng ngày, hoặc tăng thêm vào các dịp khuyến mãi từ Admin). Nếu cần tải liên tục không giới hạn, bạn có thể nâng cấp gói VIP Tháng hoặc Năm.</p>
+          </details>
+          <details class="faq-item">
+            <summary>SnapVid hỗ trợ những định dạng và độ phân giải nào?</summary>
+            <p>SnapVid hỗ trợ xuất video chuẩn MP4 và WebM từ 360p, 480p, 720p HD, 1080p Full HD cho đến 2K / 4K 60fps (tự động ghép âm thanh gốc bằng FFmpeg), cùng các định dạng âm thanh MP3 (320kbps, 192kbps, 128kbps), M4A và WAV Lossless.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Làm sao để mua và kích hoạt VIP trên thiết bị?</summary>
+            <p>Bấm nút <strong>Nâng cấp VIP</strong> trên thanh menu, gửi Mã thiết bị (dạng <code>SV-XXXX</code>) cho Admin qua Zalo / Telegram / Chuyển khoản để nhận Mã VIP kích hoạt ngay lập tức hoặc được Admin mở VIP trực tiếp từ xa.</p>
+          </details>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- VIP Upgrade & Activation Modal -->
+  <div class="modal-backdrop hidden" id="vipModal">
+    <div class="modal-panel vip-modal-panel">
+      <div class="modal-header">
+        <h3>👑 Nâng cấp &amp; Kích hoạt Tài khoản VIP</h3>
+        <button type="button" class="close-modal-btn" data-close="vipModal" aria-label="Đóng">✕</button>
+      </div>
+
+      <div class="vip-device-box">
+        <div>
+          <span class="device-label">Mã thiết bị của bạn (gửi mã này cho Admin khi nâng cấp):</span>
+          <div class="device-code-row">
+            <code id="vipClientIdDisplay">SV-........</code>
+            <span class="vip-badge-status" id="vipModalStatusBadge">Tài khoản Free</span>
+          </div>
+        </div>
+        <button type="button" class="copy-cid-btn" id="copyClientIdBtn">Sao chép mã</button>
+      </div>
+
+      <!-- Activate via VIP Key -->
+      <div class="vip-key-box">
+        <label class="field-label" for="vipKeyInput">Đã có Mã Kích Hoạt VIP từ Admin? Nhập tại đây:</label>
+        <div class="vip-key-row">
+          <input type="text" id="vipKeyInput" class="field-input no-mb" placeholder="VD: VIP-A1B2-C3D4-E5F6" />
+          <button type="button" class="primary-btn" id="redeemKeyBtn">Kích hoạt</button>
+        </div>
+        <div class="vip-feedback hidden" id="vipKeyFeedback"></div>
+      </div>
+
+      <div class="vip-divider"><span>Hoặc liên hệ Admin mua gói VIP Tháng / Năm</span></div>
+
+      <!-- Pricing Summary & Contact Links -->
+      <div class="vip-plans-mini">
+        <div class="mini-plan">
+          <strong>Gói VIP Tháng</strong>
+          <span id="modalMonthlyPrice">49.000đ / tháng</span>
+        </div>
+        <div class="mini-plan highlight">
+          <strong>Gói VIP Năm (Tiết kiệm)</strong>
+          <span id="modalYearlyPrice">349.000đ / năm</span>
+        </div>
+      </div>
+
+      <div class="contact-grid">
+        <a href="#" target="_blank" rel="noopener" class="contact-btn zalo" id="contactZaloLink">💬 Nhắn Zalo Admin</a>
+        <a href="#" target="_blank" rel="noopener" class="contact-btn tele" id="contactTeleLink">✈️ Nhắn Telegram</a>
+        <a href="#" target="_blank" rel="noopener" class="contact-btn fb" id="contactFbLink">💙 Messenger Admin</a>
+      </div>
+
+      <div class="bank-transfer-box" id="bankTransferBox">
+        <div class="bank-details">
+          <div class="bank-title">Thông tin chuyển khoản nhanh:</div>
+          <div>Ngân hàng: <strong id="bankNameDisplay">MB Bank</strong></div>
+          <div>Số tài khoản: <strong id="bankAccDisplay">999988886666</strong></div>
+          <div>Chủ TK: <strong id="bankOwnerDisplay">QUAN TRI VIEN</strong></div>
+          <div>Nội dung CK: <code id="bankMemoDisplay">VIP SV-XXXX</code></div>
+        </div>
+        <img id="bankQrImg" class="bank-qr hidden" alt="QR Chuyển khoản" />
+      </div>
+
+      <!-- Quick Notify Admin Form -->
+      <form id="vipOrderForm" class="vip-order-form">
+        <div class="field-label">Gửi thông báo đã chuyển khoản / Yêu cầu Admin tư vấn:</div>
+        <div class="order-form-grid">
+          <select id="orderPlanSelect" class="field-input no-mb">
+            <option value="VIP Tháng">Gói VIP Tháng (30 ngày)</option>
+            <option value="VIP Năm">Gói VIP Năm (365 ngày)</option>
+            <option value="VIP Vĩnh Viễn">Gói VIP Vĩnh Viễn</option>
+          </select>
+          <input type="text" id="orderContactInput" class="field-input no-mb" placeholder="SĐT Zalo hoặc Telegram của bạn..." required />
+        </div>
+        <button type="submit" class="ghost-submit-btn">Gửi yêu cầu kích hoạt tới Admin</button>
+        <div class="vip-feedback hidden" id="vipOrderFeedback"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- History Modal -->
+  <div class="modal-backdrop hidden" id="historyModal">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h3>Lịch sử tải gần đây</h3>
+        <div class="modal-header-actions">
+          <button type="button" class="text-btn" id="clearHistoryBtn">Xoá tất cả</button>
+          <button type="button" class="close-modal-btn" data-close="historyModal" aria-label="Đóng">✕</button>
+        </div>
+      </div>
+      <div class="history-list" id="historyList"></div>
+    </div>
+  </div>
+
+  <!-- Advanced Settings Modal -->
+  <div class="modal-backdrop hidden" id="settingsModal">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h3>Cài đặt nâng cao (Cookies)</h3>
+        <button type="button" class="close-modal-btn" data-close="settingsModal" aria-label="Đóng">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">
+          Các video công khai hoạt động ngay không cần cấu hình. Nếu bạn cần tải bài đăng giới hạn độ tuổi hoặc video riêng tư thuộc tài khoản mạng xã hội của chính bạn, hãy cung cấp Cookies bên dưới.
+        </p>
+
+        <label class="field-label" for="browserCookiesSelect">Đọc Cookies từ trình duyệt trên máy</label>
+        <select id="browserCookiesSelect" class="field-input">
+          <option value="">Không sử dụng (Mặc định khuyên dùng)</option>
+          <option value="firefox">Firefox</option>
+          <option value="chrome">Google Chrome</option>
+          <option value="edge">Microsoft Edge</option>
+          <option value="brave">Brave</option>
+        </select>
+
+        <label class="field-label" for="cookiesTextArea">Hoặc dán nội dung tệp <code>cookies.txt</code> (Netscape format)</label>
+        <textarea
+          id="cookiesTextArea"
+          class="field-textarea"
+          rows="5"
+          placeholder="# Netscape HTTP Cookie File&#10;.instagram.com	TRUE	/	TRUE	..."
+        ></textarea>
+
+        <div class="modal-footer">
+          <button type="button" class="ghost-btn" id="resetSettingsBtn">Đặt lại</button>
+          <button type="button" class="primary-btn" id="saveSettingsBtn">Lưu cài đặt</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>© 2026 <strong>SnapVid</strong> — Tải Video &amp; Âm Thanh Đa Nền Tảng Không Quảng Cáo</span>
+      <div class="footer-links">
+        <a href="#" id="footerVipLink">Bảng giá VIP</a>
+        <span>•</span>
+        <a href="/admin">Quản trị viên (Admin)</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
