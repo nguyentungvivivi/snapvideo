@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: snapvideo-backend
+    runtime: docker
+    plan: free
+    region: singapore
+    healthCheckPath: /api/health
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: SNAPVID_WORKERS
+        value: "2"
+      - key: SNAPVID_MEDIA_ONLY
+        value: "1"
