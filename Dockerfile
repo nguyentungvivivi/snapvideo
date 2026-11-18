@@ -17,6 +17,7 @@ RUN mkdir -p /app/data /app/downloads && chmod -R 777 /app/data /app/downloads
 ENV HOST=0.0.0.0
 ENV PORT=7860
 ENV SNAPVID_WORKERS=2
+ENV SNAPVID_MEDIA_ONLY=1
 
 EXPOSE 7860
 

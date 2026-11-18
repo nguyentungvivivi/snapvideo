@@ -234,25 +234,29 @@ async def start_download(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     platform_name = detect_platform(norm_url)["name"]
-    allowed, msg, updated_client = await asyncio.to_thread(
-        consume_client_quota,
-        client_id=cid,
-        ip=ip,
-        user_agent=ua,
-        platform=platform_name,
-        mode=payload.mode,
-        quality=payload.quality,
-        title=payload.title or "",
-    )
-    if not allowed:
-        return JSONResponse(
-            status_code=402,
-            content={
-                "detail": msg,
-                "quota_exceeded": True,
-                "client": updated_client,
-            },
+    media_only = os.environ.get("SNAPVID_MEDIA_ONLY", "").strip() == "1"
+    if media_only:
+        updated_client = await asyncio.to_thread(get_or_register_client, cid, ip, ua)
+    else:
+        allowed, msg, updated_client = await asyncio.to_thread(
+            consume_client_quota,
+            client_id=cid,
+            ip=ip,
+            user_agent=ua,
+            platform=platform_name,
+            mode=payload.mode,
+            quality=payload.quality,
+            title=payload.title or "",
         )
+        if not allowed:
+            return JSONResponse(
+                status_code=402,
+                content={
+                    "detail": msg,
+                    "quota_exceeded": True,
+                    "client": updated_client,
+                },
+            )
 
     try:
         job = await asyncio.to_thread(
